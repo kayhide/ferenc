@@ -1,0 +1,19 @@
+elements:
+  location:
+    - Tokyo
+    - Kyoto
+  facility:
+    - Library
+    - School
+
+vocabularies:
+  size:
+    - small
+    - big
+  food:
+    - apple
+    - banana
+
+templates:
+  good: 'my <<size>> <<food>> is good.'
+  bad: 'your <<size>> <<food>> is bad.'

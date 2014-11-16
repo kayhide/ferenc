@@ -2,6 +2,10 @@ module Ferenc
   class Composer
     attr_accessor :vocabularies
 
+    def initialize vocabularies = {}
+      @vocabularies = vocabularies.clone
+    end
+
     def fit text, max_length
       self.expand(text).select do |str|
         str.length <= max_length

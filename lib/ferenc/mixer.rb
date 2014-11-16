@@ -1,13 +1,13 @@
 module Ferenc
   class Mixer
-    attr_accessor :composer, :elements, :vocabularies, :templates
+    attr_accessor :elements, :vocabularies, :templates
     attr_reader :products
 
-    def initialize
-      @composer = Composer.new
-      @elements = {}
-      @vocabularies = {}
-      @templates = {}
+    def initialize args = {}
+      args = args.symbolize_keys
+      @elements = args[:elements] || {}
+      @vocabularies = args[:vocabularies] || {}
+      @templates = args[:templates] || {}
     end
 
     def mix
@@ -22,12 +22,20 @@ module Ferenc
       end
 
       [nil].product(*expanded_elements).map do |_, *args|
-        self.composer.vocabularies = self.vocabularies.clone
         args.each do |key, word, elm|
           self.composer.vocabularies[key] = vocabularies_for(elm)
         end
         @products << yield(args.map{|_, word, _| word}, *args.map(&:last))
       end
+    end
+
+    def composer
+      @composer ||= Composer.new self.vocabularies
+    end
+
+    def init_composer
+      @composer = nil
+      self.composer
     end
 
     def vocabularies_for obj
