@@ -50,7 +50,7 @@ describe Ferenc::Yss do
     before do
       @args = {
         csv: 'spec/fixtures/locations.csv',
-        attributes: %w(label name population abbr),
+        attributes: %w(to_s name population abbr),
       }
     end
 
@@ -64,10 +64,10 @@ describe Ferenc::Yss do
       locations = Ferenc::Yss.load_element('location', @args)
       expect(locations.length).to eq 2
       expect(locations[0].to_h).to eq({
-        label: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
+        to_s: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
       })
       expect(locations[1].to_h).to eq({
-        label: 'Kyoto', name: 'kyoto', population: '147', abbr: 'Kyt'
+        to_s: 'Kyoto', name: 'kyoto', population: '147', abbr: 'Kyt'
       })
     end
 
@@ -82,9 +82,8 @@ describe Ferenc::Yss do
     end
 
     it 'defines #vocabularies when arg keys includes vocabularies' do
-      @args[:vocabularies] = %w(label abbr)
+      @args[:vocabularies] = %w(to_s abbr)
       locations = Ferenc::Yss.load_element('location', @args)
-      expect(locations.length).to eq 2
       expect(locations[0].vocabularies).to eq %w(Tokyo Tky)
       expect(locations[1].vocabularies).to eq %w(Kyoto Kyt)
     end

@@ -15,17 +15,16 @@ module Ferenc
       @errors = nil
       expanded_elements = @elements.map do |key, elms|
         elms.map do |elm|
-          self.vocabularies_for(elm).map do |word|
-            [key, word, elm]
-          end
-        end.inject(&:+)
+          [key, elm.to_s, elm]
+        end
       end
 
+      combo = Struct.new(*@elements.keys.map(&:to_sym))
       [nil].product(*expanded_elements).map do |_, *args|
         args.each do |key, word, elm|
-          self.composer.vocabularies[key] = vocabularies_for(elm)
+          self.composer.vocabularies[key] = elm.try(:vocabularies) || [elm.to_s]
         end
-        @products << yield(args.map{|_, word, _| word}, *args.map(&:last))
+        @products << yield(args.map(&:second), combo.new(*args.map(&:last)))
       end
     end
 
@@ -36,10 +35,6 @@ module Ferenc
     def init_composer
       @composer = nil
       self.composer
-    end
-
-    def vocabularies_for obj
-      (obj.respond_to?(:vocabularies) && obj.vocabularies) || [obj]
     end
 
     def valid?

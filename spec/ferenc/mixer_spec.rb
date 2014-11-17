@@ -12,10 +12,10 @@ describe Ferenc::Mixer do
           'location' => %w(Tokyo),
           'facility' => %w(Library),
         }
-        @mixer.mix do |words, location, facility|
+        @mixer.mix do |words, combo|
           expect(words).to eq %w(Tokyo Library)
-          expect(location).to eq 'Tokyo'
-          expect(facility).to eq 'Library'
+          expect(combo.location).to eq 'Tokyo'
+          expect(combo.facility).to eq 'Library'
         end
       end
 
@@ -24,8 +24,8 @@ describe Ferenc::Mixer do
           'location' => %w(Tokyo Kyoto),
           'facility' => %w(Library School),
         }
-        @mixer.mix do |words, location, facility|
-          [location, facility]
+        @mixer.mix do |words, combo|
+          [combo.location, combo.facility]
         end
 
         expect(@mixer.products).to eq [
@@ -36,7 +36,24 @@ describe Ferenc::Mixer do
     end
 
     describe 'with object' do
-      it 'digs vocabularies' do
+      it 'applys word' do
+        @mixer.elements = {
+          'location' => [
+            double(to_s: 'Tokyo'),
+            double(to_s: 'Kyoto'),
+          ],
+          'facility' => %w(Library),
+        }
+        @mixer.mix do |words, combo|
+          words
+        end
+
+        expect(@mixer.products).to eq [
+          %w(Tokyo Library), %w(Kyoto Library)
+        ]
+      end
+
+      it 'passes vocabularies' do
         @mixer.elements = {
           'location' => [
             double(vocabularies: %w(Tokyo Tky)),
@@ -44,13 +61,12 @@ describe Ferenc::Mixer do
           ],
           'facility' => %w(Library),
         }
-        @mixer.mix do |words, location, facility|
-          words
+        @mixer.mix do |words, combo|
+          @mixer.composer.vocabularies['location']
         end
 
         expect(@mixer.products).to eq [
-          %w(Tokyo Library), %w(Tky Library),
-          %w(Kyoto Library), %w(Kyt Library)
+          %w(Tokyo Tky), %w(Kyoto Kyt)
         ]
       end
     end
@@ -73,7 +89,7 @@ describe Ferenc::Mixer do
   describe 'when products are all valid' do
     before do
       @mixer.elements = {'location' => %w(Tokyo Kyoto)}
-      @mixer.mix do |words, location|
+      @mixer.mix do |words, combo|
         double(valid?: true)
       end
     end
@@ -94,10 +110,10 @@ describe Ferenc::Mixer do
   describe 'when products are some invalid' do
     before do
       @mixer.elements = {'location' => %w(Tokyo Kyoto)}
-      @mixer.mix do |words, location|
+      @mixer.mix do |words, combo|
         double(
-          location: location,
-          valid?: location == 'Tokyo'
+          location: combo.location,
+          valid?: combo.location == 'Tokyo'
         )
       end
     end
