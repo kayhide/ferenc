@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'ferenc/cli'
+rescue LoadError
+  path = File.expand_path('../../lib', __FILE__)
+  $:.unshift(path)
+  require "ferenc/cli"
+end
+
+Ferenc::Cli.start

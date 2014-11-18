@@ -1,0 +1,32 @@
+- title = "#{<%= @element %>}のページタイトル"
+.panel.panel-primary
+  .panel-heading
+    h1.panel-title.text-center= title
+  .panel-body
+    p.lead.text-center.text-danger
+      | 説明文1行目
+      br
+      | 説明文2行目
+    .text-center
+      a href="link/bus-app" target="_blank"
+        = image_tag "images/eyecatch.jpg", alt: "イメージ画像"
+    .text-link
+      a href="link/bus-app" target="_blank"
+        | テキストリンク
+        br
+        | ≫ こちら ≪
+  .panel-heading
+    h2.panel-title.text-center みだし
+  .panel-body
+    p 詳細1行目
+    p 詳細2行目
+    p 詳細3行目
+  .panel-body
+    .text-link
+      a href="link/bus-app" target="_blank"
+        | テキストリンク
+        br
+        | ≫ こちら ≪
+  .panel-footer
+    p.text-center &copy; #{title}
+    p.text-center= link_to '運営情報', '/info/about.html'

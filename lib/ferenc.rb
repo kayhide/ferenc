@@ -1,5 +1,6 @@
 require 'csv'
 require 'active_support/core_ext'
+require 'active_support/inflector'
 require 'active_model'
 require 'colorize'
 

@@ -1,0 +1,32 @@
+campaign:
+  name: キャンペーン名
+  budget: 3000
+  domain: 'campaign.com'
+
+ad:
+  budget: 9
+  title: '<<item>>の通販'
+  desc1: '<<<season>>><<for>><<buy>>'
+  desc2: '<<kawaii>><<<item>>>を通販で！'
+
+vocabularies:
+  kawaii:
+    - かわいい
+    - ''
+  buy:
+    - 買っちゃいました！
+    - 買いました！
+    - ！
+  for:
+    - のために
+    - 用に
+
+elements:
+  item:
+    - あれ
+    - これ
+  season:
+    - 春
+    - 夏
+    - 秋
+    - 冬
