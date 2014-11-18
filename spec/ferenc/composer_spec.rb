@@ -6,6 +6,7 @@ describe Ferenc::Composer do
     @composer.vocabularies ={
       'size' => %w(small big),
       'food' => %w(apple banana),
+      'empty' => [],
     }
   end
 
@@ -40,6 +41,13 @@ describe Ferenc::Composer do
       text = '<<size>> <<<food>>>'
       expect(@composer.expand text).to eq(
         ['small apple', 'big apple', 'small banana', 'big banana']
+      )
+    end
+
+    it 'accepts empty vocabularies' do
+      text = '<<empty>><<food>>'
+      expect(@composer.expand text).to eq(
+        ['apple', 'banana']
       )
     end
   end
