@@ -3,6 +3,7 @@ module Ferenc
     class Campaign
       include ActiveModel::Model
       attr_accessor :name, :budget, :starts_on
+      attr_accessor :domain
       attr_accessor :ads
 
       def ads
