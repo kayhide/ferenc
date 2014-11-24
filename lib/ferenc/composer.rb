@@ -15,11 +15,15 @@ module Ferenc
     def expand text
       tokens = text.scan(/(<<+([^<>]+)>>+|[^<>]+)/).each_with_index.map do |m, i|
         if key = m.last
-          vocabularies = @vocabularies[key]
-          if vocabularies.present?
-            Token.new i, @vocabularies[key], m.first.count('<')
+          if key.include? '|'
+            Token.new i, key.split('|', -1), m.first.count('<')
           else
-            Token.new i, [''], 0
+            vocabularies = @vocabularies[key]
+            if vocabularies.present?
+              Token.new i, vocabularies, m.first.count('<')
+            else
+              Token.new i, [''], 0
+            end
           end
         else
           Token.new i, [m.first], 0

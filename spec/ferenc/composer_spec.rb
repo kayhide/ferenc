@@ -50,5 +50,12 @@ describe Ferenc::Composer do
         ['apple', 'banana']
       )
     end
+
+    it 'takes inline vocabularies' do
+      text = '<<apple|banana|>>'
+      expect(@composer.expand text).to eq(
+        ['apple', 'banana', '']
+      )
+    end
   end
 end
