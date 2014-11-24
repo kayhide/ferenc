@@ -6,17 +6,13 @@ describe Ferenc::Yss do
       file = 'spec/fixtures/yss.yml'
       yss = Ferenc::Yss.load file
 
-      expect(yss.mixer.elements).to eq({
+      expect(yss.elements).to eq({
         location: %w(Tokyo Kyoto),
         facility: %w(Library School)
       })
-      expect(yss.mixer.vocabularies).to eq({
+      expect(yss.vocabularies).to eq({
         size: %w(small big),
         food: %w(apple banana)
-      })
-      expect(yss.mixer.templates).to eq({
-        good: 'my <<size>> <<food>> is good.',
-        bad: 'your <<size>> <<food>> is bad.'
       })
     end
 
@@ -90,6 +86,88 @@ describe Ferenc::Yss do
   end
 
 
+  describe '#campaigns' do
+    before do
+      @yss = subject
+    end
+
+    it 'creates campaigns' do
+      @yss.config = {
+        campaigns: [
+          {name: 'Campaign1', budget: 1234},
+          {name: 'Campaign2', budget: 2345}
+        ],
+        elements: {location: %w(Tokyo)},
+      }
+
+      campaigns = @yss.campaigns
+      expect(campaigns.length).to eq 2
+      expect(campaigns[0].name).to eq 'Campaign1'
+      expect(campaigns[0].budget).to eq 1234
+      expect(campaigns[1].name).to eq 'Campaign2'
+      expect(campaigns[1].budget).to eq 2345
+    end
+
+    it 'creates ads' do
+      @yss.config = {
+        campaigns: [
+          { name: 'Campaign1', budget: 1234,
+            ad:
+            { title: '<<location>>',
+              desc1: '<<location>> is good.',
+              desc2: '<<location>> is nice.',
+            },
+          },
+        ],
+        elements: {location: %w(Tokyo Kyoto)},
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.length).to eq 2
+      expect(ads[0].title).to eq 'Tokyo'
+      expect(ads[0].desc1).to eq 'Tokyo is good.'
+      expect(ads[0].desc2).to eq 'Tokyo is nice.'
+      expect(ads[1].title).to eq 'Kyoto'
+      expect(ads[1].desc1).to eq 'Kyoto is good.'
+      expect(ads[1].desc2).to eq 'Kyoto is nice.'
+    end
+
+    it 'mixes elements' do
+      @yss.config = {
+        campaigns: [{
+          name: 'Campaign1', budget: 1234,
+          ad: {title: '<<location>> <<faculty>>'},
+          elements: [:location, :faculty]
+        }],
+        elements: {
+          location: %w(Tokyo Kyoto),
+          faculty: %w(Library School)
+        },
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.map(&:title)).to eq(
+        ['Tokyo Library', 'Tokyo School', 'Kyoto Library', 'Kyoto School']
+      )
+    end
+
+    it 'follows elements order' do
+      @yss.config = {
+        campaigns: [{
+          name: 'Campaign1', budget: 1234,
+          ad: {title: '<<location>> <<faculty>>'},
+          elements: [:faculty, :location]
+        }],
+        elements: {
+          location: %w(Tokyo Kyoto),
+          faculty: %w(Library School)
+        },
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.map(&:title)).to eq(
+        ['Tokyo Library', 'Kyoto Library', 'Tokyo School', 'Kyoto School']
+      )
+    end
+  end
+
   describe '#campaign' do
     before do
       @yss = subject
@@ -114,7 +192,8 @@ describe Ferenc::Yss do
     before do
       @yss = subject
       @yss.config = {
-        ad: {keyword: 'Keyword', budget: 123}
+        ad: {words: %w(Keyword), budget: 123},
+        vocabularies: {location: %w(Tokyo)}
       }
     end
 
@@ -125,26 +204,8 @@ describe Ferenc::Yss do
     end
 
     it 'overwrites by args' do
-      ad = @yss.ad keyword: 'Overwritten'
+      ad = @yss.ad words: %w(Overwritten)
       expect(ad.keyword).to eq 'Overwritten'
-    end
-
-    describe 'when title, desc1 and desc2 are set' do
-      before do
-        @yss.config[:ad].merge!({
-          title: '<<location>>',
-          desc1: '<<location>> is good.',
-          desc2: '<<location>> is nice.',
-        })
-      end
-
-      it 'sets composed texts' do
-        @yss.mixer = Ferenc::Mixer.new vocabularies: {location: %w(Tokyo)}
-        ad = @yss.ad
-        expect(ad.title).to eq 'Tokyo'
-        expect(ad.desc1).to eq 'Tokyo is good.'
-        expect(ad.desc2).to eq 'Tokyo is nice.'
-      end
     end
   end
 end

@@ -1,29 +1,21 @@
 Bundler.require
 
+$yss_file = File.join('data', ENV['YSS'] || 'yss.yml')
+
 task :export do
-  $yss = Ferenc::Yss.load('data/yss.yml')
-  campaign = $yss.campaign
-  campaign.starts_on = Date.today.strftime('%Y/%m/%d')
-
-  $yss.mixer.mix do |words, combo|
-    $yss.ad(
-      campaign: campaign,
-      keyword: words.select(&:present?).join(' '),
-      display_url: campaign.domain,
-      link_url: "http://#{campaign.domain}/#{combo.item.name}.html",
-    )
-  end
-
-  if $yss.mixer.valid?
-    campaign.ads = $yss.mixer.products
-    campaign.display STDOUT
-    FileUtils.mkdir_p 'exports'
-    FileUtils.chdir 'exports' do
-      open("#{campaign.name}.csv", 'w') << campaign.to_csv
-    end
-  else
-    $yss.mixer.errors.each do |ad|
-      puts ad.keyword.red.bold
+  $yss = Ferenc::Yss.load($yss_file)
+  campaigns = $yss.campaigns
+  campaigns.each do |campaign|
+    if campaign.valid?
+      campaign.display STDOUT
+      FileUtils.mkdir_p 'exports'
+      FileUtils.chdir 'exports' do
+        open("#{campaign.name}.csv", 'w') << campaign.to_csv
+      end
+    else
+      campaign.errors.each do |ad|
+        puts ad.keyword.red.bold
+      end
     end
   end
 end

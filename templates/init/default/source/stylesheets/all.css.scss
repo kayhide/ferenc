@@ -10,18 +10,9 @@ $font-size-base:16px;
 $brand-primary: #7da62c;
 $link-color: #00f;
 $link-hover-color: #f00;
-@import 'bootstrap';
 
-.text-link {
-    @extend .text-center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    a {
-        text-decoration: underline;
-    }
-}
+@import 'bootstrap';
+@import 'sassy-buttons';
 
 .panel {
     margin-top: 20px;
@@ -39,5 +30,24 @@ $link-hover-color: #f00;
         a {
             color: $gray;
         }
+    }
+}
+
+.text-link {
+    @extend .text-center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    a {
+        text-decoration: underline;
+    }
+}
+
+.button {
+    @include sassy-button("shiny", 15px, 24px, red);
+    &:hover {
+        color: #ffffff;
+        text-decoration: none;
     }
 }

@@ -6,8 +6,8 @@ module Ferenc
       DESC2_LENGTH = 19
 
       include ActiveModel::Model
-      attr_accessor :campaign
-      attr_accessor :keyword, :budget, :title, :desc1, :desc2, :display_url, :link_url
+      attr_accessor :campaign, :words
+      attr_accessor :budget, :title, :desc1, :desc2, :display_url, :link_url
       validates_presence_of :title, :desc1, :desc2
       validates_length_of :title, maximum: TITLE_LENGTH
       validates_length_of :desc1, maximum: DESC1_LENGTH
@@ -29,6 +29,9 @@ module Ferenc
         self.keyword.gsub(/\s*/, '')
       end
 
+      def keyword
+        self.words.join(' ')
+      end
 
       class << self
         def length_for key

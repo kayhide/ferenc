@@ -1,13 +1,12 @@
-campaign:
-  name: キャンペーン名
-  budget: 3000
-  domain: 'campaign.com'
-
-ad:
-  budget: 9
-  title: '<<item>>の通販'
-  desc1: '<<<season>>><<for>><<buy>>'
-  desc2: '<<kawaii>><<<item>>>を通販で！'
+campaigns:
+  - name: キャンペーン名
+    budget: 3000
+    domain: 'campaign.com'
+    ad:
+      budget: 9
+      title: '<<item>>の通販'
+      desc1: '<<<season>>><<for>><<buy>>'
+      desc2: '<<kawaii>><<<item>>>を通販で！'
 
 vocabularies:
   kawaii:

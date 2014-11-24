@@ -19,6 +19,7 @@ module Ferenc
     desc 'generate ELEMENTS [attrs]', 'Generate elements'
     method_option :yss, type: :string, aliases: '-y', desc: 'Use yss settings file'
     def generate element, *attrs
+      attrs = %w(to_param to_s) + attrs
       @element = element.singularize
       @elements = element.pluralize
       @attributes = attrs

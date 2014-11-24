@@ -2,9 +2,8 @@ module Ferenc
   class Yss
     class Campaign
       include ActiveModel::Model
-      attr_accessor :name, :budget, :starts_on
-      attr_accessor :domain
-      attr_accessor :ads
+      ATTRIBUTES = [:name, :budget, :starts_on, :domain, :ads]
+      attr_accessor(*ATTRIBUTES)
 
       def ads
         @ads ||= []
@@ -29,6 +28,14 @@ module Ferenc
           io << ad.desc2 << "\n"
           io << ad.display_url.green << "\n\n"
         end
+      end
+
+      def valid?
+        @ads && self.errors.blank?
+      end
+
+      def errors
+        @errors ||= @ads && @ads.reject(&:valid?)
       end
     end
   end

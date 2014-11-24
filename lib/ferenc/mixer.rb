@@ -1,6 +1,6 @@
 module Ferenc
   class Mixer
-    attr_accessor :elements, :vocabularies, :templates
+    attr_accessor :elements, :vocabularies
     attr_reader :products
 
     def initialize args = {}
@@ -42,10 +42,6 @@ module Ferenc
 
     def errors
       @errors ||= @products && @products.reject(&:valid?)
-    end
-
-    def compose key, max_length
-      self.composer.fit(self.templates[key.to_s], max_length)
     end
   end
 end

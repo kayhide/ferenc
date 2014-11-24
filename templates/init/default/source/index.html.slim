@@ -1,4 +1,7 @@
 - title = 'ページタイトル'
+- content_for :title do
+  = title
+- url = 'http://yahoo.co.jp'
 .panel.panel-primary
   .panel-heading
     h1.panel-title.text-center= title
@@ -8,10 +11,10 @@
       br
       | 説明文2行目
     .text-center
-      a href="link/bus-app" target="_blank"
+      a href=url target="_blank"
         = image_tag "images/eyecatch.jpg", alt: "イメージ画像"
     .text-link
-      a href="link/bus-app" target="_blank"
+      a href=url target="_blank"
         | テキストリンク
         br
         | ≫ こちら ≪
@@ -21,12 +24,10 @@
     p 詳細1行目
     p 詳細2行目
     p 詳細3行目
-  .panel-body
+  .panel-body.text-center
     .text-link
-      a href="link/bus-app" target="_blank"
+      a.button href=url target="_blank"
         | テキストリンク
-        br
-        | ≫ こちら ≪
   .panel-footer
     p.text-center &copy; #{title}
     p.text-center= link_to '運営情報', '/info/about.html'

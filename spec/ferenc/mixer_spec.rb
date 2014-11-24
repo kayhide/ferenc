@@ -72,20 +72,6 @@ describe Ferenc::Mixer do
     end
   end
 
-  describe '#compose' do
-    it 'calls Composer#fit' do
-      @mixer.templates['text'] = 'template text'
-      expect(@mixer.composer).to receive(:fit).with('template text', 10)
-      @mixer.compose('text', 10)
-    end
-
-    it 'accepts Symbol for template key' do
-      @mixer.templates['text'] = 'template text'
-      expect(@mixer.composer).to receive(:fit).with('template text', 10)
-      @mixer.compose(:text, 10)
-    end
-  end
-
   describe 'when products are all valid' do
     before do
       @mixer.elements = {location: %w(Tokyo Kyoto)}
