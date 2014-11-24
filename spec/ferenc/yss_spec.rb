@@ -7,16 +7,16 @@ describe Ferenc::Yss do
       yss = Ferenc::Yss.load file
 
       expect(yss.mixer.elements).to eq({
-        'location' => %w(Tokyo Kyoto),
-        'facility' => %w(Library School)
+        location: %w(Tokyo Kyoto),
+        facility: %w(Library School)
       })
       expect(yss.mixer.vocabularies).to eq({
-        'size' => %w(small big),
-        'food' => %w(apple banana)
+        size: %w(small big),
+        food: %w(apple banana)
       })
       expect(yss.mixer.templates).to eq({
-        'good' => 'my <<size>> <<food>> is good.',
-        'bad' => 'your <<size>> <<food>> is bad.'
+        good: 'my <<size>> <<food>> is good.',
+        bad: 'your <<size>> <<food>> is bad.'
       })
     end
 
@@ -30,18 +30,18 @@ describe Ferenc::Yss do
   describe '.load_elements' do
     it 'returns hash' do
       elements = Ferenc::Yss.load_elements(
-        'location' => %w(Tokyo Kyoto),
-        'facility' => %w(Library School)
+        location: %w(Tokyo Kyoto),
+        facility: %w(Library School)
       )
       expect(elements).to eq({
-        'location' => %w(Tokyo Kyoto),
-        'facility' => %w(Library School)
+        location: %w(Tokyo Kyoto),
+        facility: %w(Library School)
       })
     end
 
     it 'calls .load_element when args includes Hash' do
-      hash = {'location' => {csv: 'locations.csv'}}
-      expect(Ferenc::Yss).to receive(:load_element).with('location', {csv: 'locations.csv'})
+      hash = {location: {csv: 'locations.csv'}}
+      expect(Ferenc::Yss).to receive(:load_element).with(:location, {csv: 'locations.csv'})
       Ferenc::Yss.load_elements hash
     end
   end
@@ -61,7 +61,7 @@ describe Ferenc::Yss do
     end
 
     it 'loads from csv' do
-      locations = Ferenc::Yss.load_element('location', @args)
+      locations = Ferenc::Yss.load_element(:location, @args)
       expect(locations.length).to eq 2
       expect(locations[0].to_h).to eq({
         to_s: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
@@ -72,18 +72,18 @@ describe Ferenc::Yss do
     end
 
     it 'defines class' do
-      Ferenc::Yss.load_element('location', @args)
+      Ferenc::Yss.load_element(:location, @args)
       expect(Ferenc::Element::Location).to be_a(Class)
     end
 
     it 'defines .all' do
-      locations = Ferenc::Yss.load_element('location', @args)
+      locations = Ferenc::Yss.load_element(:location, @args)
       expect(Ferenc::Element::Location.all).to eq locations
     end
 
     it 'defines #vocabularies when arg keys includes vocabularies' do
       @args[:vocabularies] = %w(to_s abbr)
-      locations = Ferenc::Yss.load_element('location', @args)
+      locations = Ferenc::Yss.load_element(:location, @args)
       expect(locations[0].vocabularies).to eq %w(Tokyo Tky)
       expect(locations[1].vocabularies).to eq %w(Kyoto Kyt)
     end
@@ -94,7 +94,7 @@ describe Ferenc::Yss do
     before do
       @yss = subject
       @yss.config = {
-        'campaign' => {name: 'Campaign', budget: 1234}
+        campaign: {name: 'Campaign', budget: 1234}
       }
     end
 
@@ -114,7 +114,7 @@ describe Ferenc::Yss do
     before do
       @yss = subject
       @yss.config = {
-        'ad' => {keyword: 'Keyword', budget: 123}
+        ad: {keyword: 'Keyword', budget: 123}
       }
     end
 
@@ -131,7 +131,7 @@ describe Ferenc::Yss do
 
     describe 'when title, desc1 and desc2 are set' do
       before do
-        @yss.config['ad'].merge!({
+        @yss.config[:ad].merge!({
           title: '<<location>>',
           desc1: '<<location>> is good.',
           desc2: '<<location>> is nice.',
@@ -139,7 +139,7 @@ describe Ferenc::Yss do
       end
 
       it 'sets composed texts' do
-        @yss.mixer = Ferenc::Mixer.new vocabularies: {'location' => %w(Tokyo)}
+        @yss.mixer = Ferenc::Mixer.new vocabularies: {location: %w(Tokyo)}
         ad = @yss.ad
         expect(ad.title).to eq 'Tokyo'
         expect(ad.desc1).to eq 'Tokyo is good.'

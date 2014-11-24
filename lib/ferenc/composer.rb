@@ -18,7 +18,7 @@ module Ferenc
           if key.include? '|'
             Token.new i, key.split('|', -1), m.first.count('<')
           else
-            vocabularies = @vocabularies[key]
+            vocabularies = @vocabularies[key.to_sym]
             if vocabularies.present?
               Token.new i, vocabularies, m.first.count('<')
             else

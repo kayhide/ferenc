@@ -4,9 +4,9 @@ describe Ferenc::Composer do
   before do
     @composer = subject
     @composer.vocabularies ={
-      'size' => %w(small big),
-      'food' => %w(apple banana),
-      'empty' => [],
+      size: %w(small big),
+      food: %w(apple banana),
+      empty: [],
     }
   end
 

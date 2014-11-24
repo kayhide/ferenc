@@ -6,12 +6,12 @@ module Ferenc
     attr_accessor :config, :mixer
 
     def campaign args = {}
-      Campaign.new(config['campaign'].merge args)
+      Campaign.new(config[:campaign].merge args)
     end
 
     def ad args = {}
-      ad = Ad.new(config['ad'].merge args)
-      %w(title desc1 desc2).each do |key|
+      ad = Ad.new(config[:ad].merge args)
+      %i(title desc1 desc2).each do |key|
         if (text = ad.send(key)).present?
           ad.send("#{key}=", @mixer.composer.fit(text, Ad.length_for(key)))
         end
@@ -25,14 +25,14 @@ module Ferenc
 
       def load file
         yss = Yss.new
-        yss.config = config = YAML.load_file(file)
-        config['campaign'] ||= {}
-        config['ad'] ||= {}
+        yss.config = config = YAML.load_file(file).deep_symbolize_keys
+        config[:campaign] ||= {}
+        config[:ad] ||= {}
 
         yss.mixer = Mixer.new(
-          elements: load_elements(config['elements']),
-          vocabularies: config['vocabularies'],
-          templates: config['templates']
+          elements: load_elements(config[:elements]),
+          vocabularies: config[:vocabularies],
+          templates: config[:templates]
         )
         @current = yss
       end
@@ -48,7 +48,6 @@ module Ferenc
       end
 
       def load_element key, args
-        args = args.symbolize_keys
         struct = Struct.new(*args[:attributes].map(&:to_sym))
         elements = CSV.read(args[:csv]).select do |row|
           row.length == struct.members.length

@@ -4,7 +4,6 @@ module Ferenc
     attr_reader :products
 
     def initialize args = {}
-      args = args.symbolize_keys
       @elements = args[:elements] || {}
       @vocabularies = args[:vocabularies] || {}
       @templates = args[:templates] || {}
