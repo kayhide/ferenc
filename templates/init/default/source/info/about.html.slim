@@ -1,5 +1,8 @@
+- title = '運営情報'
+- content_for :title do
+  = title
 .panel.panel-primary
   .panel-heading
-    h1.panel-title.text-center 運営情報
+    h1.panel-title.text-center= title
   .panel-body.text-center
     = image_tag '/images/about.png'
