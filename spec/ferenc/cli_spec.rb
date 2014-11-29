@@ -26,7 +26,6 @@ describe Ferenc::Cli do
 
       expect(File.exists? 'site-1/.gitignore').to eq true
       expect(File.exists? 'site-1/Gemfile').to eq true
-      expect(File.exists? 'site-1/Rakefile').to eq true
       expect(Dir.exists? 'site-1/data').to eq true
       expect(Dir.exists? 'site-1/source').to eq true
     end
@@ -47,4 +46,21 @@ describe Ferenc::Cli do
       expect(File.exists? 'data/locations.csv').to eq true
     end
   end
+
+  describe '#export' do
+    before do
+      @dir = File.join(@cli_dir, 'site-1')
+      FileUtils.cp_r File.expand_path('../../fixtures/cli/site-1', __FILE__), @dir
+      Dir.chdir @dir
+    end
+
+    it 'creates files' do
+      quietly do
+        subject.invoke :export
+      end
+
+      expect(File.exists? 'exports/campaign-1.csv').to eq true
+    end
+  end
 end
+
