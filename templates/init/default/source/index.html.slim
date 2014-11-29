@@ -10,11 +10,10 @@
       | 説明文1行目
       br
       | 説明文2行目
-    .text-center
-      a href=url target="_blank"
-        = image_tag "images/eyecatch.jpg", alt: "イメージ画像"
+    a href=url
+      = image_tag "images/eyecatch.jpg", alt: "イメージ画像", class: 'img-responsive center-block'
     .text-link
-      a href=url target="_blank"
+      a href=url
         | テキストリンク
         br
         | ≫ こちら ≪
@@ -25,7 +24,7 @@
     p 詳細2行目
     p 詳細3行目
   .panel-body.text-center
-    a.button href=url target="_blank"
+    a.button href=url
       | テキストリンク
   .panel-footer
     p.text-center &copy; #{title}
