@@ -12,7 +12,8 @@ module Ferenc
         @campaign = yss.campaign(attrs.slice(*Campaign::ATTRIBUTES))
         @campaign.starts_on = Date.today.strftime('%Y/%m/%d')
         @ad_attrs = attrs[:ad] || {}
-        @element_keys = attrs[:elements].try(:map, &:to_sym) ||  yss.elements.keys
+        @element_keys = attrs[:elements].try(:map, &:to_sym) || yss.elements.keys
+        @focused_element_keys = attrs[:focused_elements].try(:map, &:to_sym) || []
       end
 
       def ads
@@ -24,7 +25,7 @@ module Ferenc
           generator = AdGenerator.new @yss, @ad_attrs, words, combo
           ad = generator.ad
           ad.campaign = @campaign
-          ad.words = words
+          ad.words = focus words
           %w(title desc1 desc2).each do |key|
             if (text = ad.send(key)).present?
               ad.send("#{key}=", @mixer.composer.fit(text, Ad.length_for(key)))
@@ -36,6 +37,19 @@ module Ferenc
           ad
         end
         @campaign.ads = @mixer.products
+      end
+
+      def focused_element_indices
+        @focused_element_indices ||= @focused_element_keys.map do |k|
+          @element_keys.index k
+        end
+      end
+
+      def focus words
+        self.focused_element_indices.each do  |i|
+          words[i] = "+#{words[i]}"
+        end
+        words
       end
     end
 

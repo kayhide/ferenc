@@ -165,6 +165,28 @@ describe Ferenc::Yss do
       expect(ads.map(&:title)).to eq(
         ['Tokyo Library', 'Kyoto Library', 'Tokyo School', 'Kyoto School']
       )
+      expect(ads.map(&:keyword)).to eq(
+        ['Library Tokyo', 'Library Kyoto', 'School Tokyo', 'School Kyoto']
+      )
+    end
+
+    it 'focuses elements' do
+      @yss.config = {
+        campaigns: [{
+          name: 'Campaign1', budget: 1234,
+          ad: {title: '<<location>> <<faculty>>'},
+          elements: [:location, :faculty],
+          focused_elements: [:faculty]
+        }],
+        elements: {
+          location: %w(Tokyo Kyoto),
+          faculty: %w(Library School)
+        },
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.map(&:keyword)).to eq(
+        ['Tokyo +Library', 'Tokyo +School', 'Kyoto +Library', 'Kyoto +School']
+      )
     end
   end
 
