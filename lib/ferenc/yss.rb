@@ -21,22 +21,32 @@ module Ferenc
           elements: @yss.elements.slice(*@element_keys),
           vocabularies: @yss.vocabularies,
         )
+        @composer = Composer.new @yss.vocabularies
         @mixer.mix do |words, combo|
           generator = AdGenerator.new @yss, @ad_attrs, words, combo
           ad = generator.ad
           ad.campaign = @campaign
           ad.words = focus words
+          combo.members.each do |key|
+            @composer.vocabularies[key] = combo[key].try(:vocabularies) || [combo[key].to_s]
+          end
           %w(title desc1 desc2).each do |key|
             if (text = ad.send(key)).present?
-              ad.send("#{key}=", @mixer.composer.fit(text, Ad.length_for(key)))
+              ad.send("#{key}=", @composer.fit(text, Ad.length_for(key)))
             end
           end
           ad.display_url ||= @campaign.domain
-          ad.link_url ||= "http://#{@campaign.domain}/#{combo[0].to_param}.html"
+          ad.path ||= @element_keys.map{|k| "<<#{k}>>"}.join('_') + '.html'
+          path = composer_for(combo, :to_param).expand(ad.path).first
+          ad.link_url ||= "http://#{@campaign.domain}/#{path}"
           yield generator if block_given?
           ad
         end
         @campaign.ads = @mixer.products
+      end
+
+      def composer_for combo, method
+        Composer.new combo.to_h.map{|k, v| [k, [v.try(method)]]}.to_h
       end
 
       def focused_element_indices
@@ -57,7 +67,7 @@ module Ferenc
       attr_reader :ad, :words, :combo
       def initialize yss, attrs, words, combo
         @yss = yss
-        @ad = yss.ad(attrs)
+        @ad = yss.ad(attrs.slice(*Ad::ATTRIBUTES))
         @words = words
         @combo = combo
       end

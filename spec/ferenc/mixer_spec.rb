@@ -52,23 +52,6 @@ describe Ferenc::Mixer do
           %w(Tokyo Library), %w(Kyoto Library)
         ]
       end
-
-      it 'passes vocabularies' do
-        @mixer.elements = {
-          location: [
-            double(vocabularies: %w(Tokyo Tky)),
-            double(vocabularies: %w(Kyoto Kyt)),
-          ],
-          facility: %w(Library),
-        }
-        @mixer.mix do |words, combo|
-          @mixer.composer.vocabularies[:location]
-        end
-
-        expect(@mixer.products).to eq [
-          %w(Tokyo Tky), %w(Kyoto Kyt)
-        ]
-      end
     end
   end
 

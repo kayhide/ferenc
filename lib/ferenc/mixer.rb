@@ -5,8 +5,6 @@ module Ferenc
 
     def initialize args = {}
       @elements = args[:elements] || {}
-      @vocabularies = args[:vocabularies] || {}
-      @templates = args[:templates] || {}
     end
 
     def mix
@@ -20,20 +18,8 @@ module Ferenc
 
       combo = Struct.new(*@elements.keys.map(&:to_sym))
       [nil].product(*expanded_elements).map do |_, *args|
-        args.each do |key, word, elm|
-          self.composer.vocabularies[key] = elm.try(:vocabularies) || [elm.to_s]
-        end
         @products << yield(args.map(&:second), combo.new(*args.map(&:last)))
       end
-    end
-
-    def composer
-      @composer ||= Composer.new self.vocabularies
-    end
-
-    def init_composer
-      @composer = nil
-      self.composer
     end
 
     def valid?

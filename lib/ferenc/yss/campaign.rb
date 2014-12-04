@@ -2,7 +2,7 @@ module Ferenc
   class Yss
     class Campaign
       include ActiveModel::Model
-      ATTRIBUTES = [:name, :budget, :starts_on, :domain, :ads]
+      ATTRIBUTES = %i(name budget starts_on domain ads)
       attr_accessor(*ATTRIBUTES)
 
       def ads

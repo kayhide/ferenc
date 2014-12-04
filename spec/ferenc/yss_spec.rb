@@ -188,6 +188,46 @@ describe Ferenc::Yss do
         ['Tokyo +Library', 'Tokyo +School', 'Kyoto +Library', 'Kyoto +School']
       )
     end
+
+    it 'sets link_url' do
+      @yss.config = {
+        campaigns: [{
+          name: 'Campaign1', budget: 1234,
+          domain: 'campaign.com',
+          ad: {}
+        }]
+      }
+      allow(@yss).to receive(:elements) {
+        {
+          location: [double(to_param: 'tokyo'), double(to_param: 'kyoto')],
+          faculty: [double(to_param: 'library')],
+        }
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.map(&:link_url)).to eq(
+        ['http://campaign.com/tokyo_library.html', 'http://campaign.com/kyoto_library.html']
+      )
+    end
+
+    it 'applies path to link_url' do
+      @yss.config = {
+        campaigns: [{
+          name: 'Campaign1', budget: 1234,
+          domain: 'campaign.com',
+          ad: {path: '<<location>>/<<faculty>>/'},
+        }]
+      }
+      allow(@yss).to receive(:elements) {
+        {
+          location: [double(to_param: 'tokyo'), double(to_param: 'kyoto')],
+          faculty: [double(to_param: 'library')],
+        }
+      }
+      ads = @yss.campaigns.first.ads
+      expect(ads.map(&:link_url)).to eq(
+        ['http://campaign.com/tokyo/library/', 'http://campaign.com/kyoto/library/']
+      )
+    end
   end
 
   describe '#campaign' do

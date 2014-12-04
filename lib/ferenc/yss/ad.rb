@@ -6,8 +6,8 @@ module Ferenc
       DESC2_LENGTH = 19
 
       include ActiveModel::Model
-      attr_accessor :campaign, :words
-      attr_accessor :budget, :title, :desc1, :desc2, :display_url, :link_url
+      ATTRIBUTES = %i(campaign words budget title desc1 desc2 display_url link_url path)
+      attr_accessor(*ATTRIBUTES)
       validates_presence_of :title, :desc1, :desc2
       validates_length_of :title, maximum: TITLE_LENGTH
       validates_length_of :desc1, maximum: DESC1_LENGTH
