@@ -15,9 +15,9 @@ module Ferenc
 
       def to_csv
         [
-          "#{self.campaign.name},#{self.group_name},広告グループ,オン,,,,,#{self.budget},,,,,,,,,,,,,,,,,,,",
-          "#{self.campaign.name},#{self.group_name},キーワード,オン,,部分一致,#{self.keyword},,#{self.budget},,,,,,,,,,,,,,,,,,,",
-          "#{self.campaign.name},#{self.group_name},広告,オン,,,,,,#{self.name},#{self.title},#{self.desc1},#{self.desc2},#{self.display_url},#{self.link_url},,,,,,テキスト（15・19-19）,,,,,,,"
+          "#{self.campaign.label},#{self.group_name},広告グループ,オン,,,,,#{self.budget},,,,,,,,,,,,,,,,,,,",
+          "#{self.campaign.label},#{self.group_name},キーワード,オン,,部分一致,#{self.keyword},,#{self.budget},,,,,,,,,,,,,,,,,,,",
+          "#{self.campaign.label},#{self.group_name},広告,オン,,,,,,#{self.name},#{self.title},#{self.desc1},#{self.desc2},#{self.display_url},#{self.link_url},,,,,,テキスト（15・19-19）,,,,,,,"
         ]
       end
 

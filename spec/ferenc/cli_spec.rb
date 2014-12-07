@@ -52,6 +52,12 @@ describe Ferenc::Cli do
       @dir = File.join(@cli_dir, 'site-1')
       FileUtils.cp_r File.expand_path('../../fixtures/cli/site-1', __FILE__), @dir
       Dir.chdir @dir
+
+      Timecop.freeze(Time.new(2014, 12, 6))
+    end
+
+    after do
+      Timecop.return
     end
 
     it 'creates files' do
@@ -59,7 +65,7 @@ describe Ferenc::Cli do
         subject.invoke :export
       end
 
-      expect(File.exists? 'exports/campaign-1.csv').to eq true
+      expect(File.exists? 'exports/campaign-1_20141206.csv').to eq true
     end
   end
 end

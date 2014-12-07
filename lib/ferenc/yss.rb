@@ -10,7 +10,7 @@ module Ferenc
       def initialize yss, attrs
         @yss = yss
         @campaign = yss.campaign(attrs.slice(*Campaign::ATTRIBUTES))
-        @campaign.starts_on = Date.today.strftime('%Y/%m/%d')
+        @campaign.starts_on = Date.today
         @ad_attrs = attrs[:ad] || {}
         @element_keys = attrs[:elements].try(:map, &:to_sym) || yss.elements.keys
         @focused_element_keys = attrs[:focused_elements].try(:map, &:to_sym) || []

@@ -57,7 +57,7 @@ EOS
           campaign.display STDOUT
           FileUtils.mkdir_p 'exports'
           FileUtils.chdir 'exports' do
-            open("#{campaign.name}.csv", 'w') << campaign.to_csv
+            open("#{campaign.name}_#{campaign.starts_on.strftime '%Y%m%d'}.csv", 'w') << campaign.to_csv
           end
         else
           campaign.errors.each do |ad|
