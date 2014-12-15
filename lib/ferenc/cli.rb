@@ -40,10 +40,12 @@ EOS
     attributes: [#{attrs.join ', '}]
     vocabularies: [#{attrs.join ', '}]
 EOS
-      append_to_file 'source/layouts/layout.slim', <<EOS
+      if File.exist? 'source/layouts/layout.slim'
+        append_to_file 'source/layouts/layout.slim', <<EOS
         - sitemap.resources.select{|res| res.metadata[:locals][:#{@element}]}.each do |res|
           = link_to res.metadata[:locals][:#{@element}].to_s, res.path
 EOS
+      end
     end
 
     desc 'export', 'Export csv for yss'
