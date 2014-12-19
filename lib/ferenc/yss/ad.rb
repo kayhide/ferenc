@@ -5,8 +5,11 @@ module Ferenc
       DESC1_LENGTH = 19
       DESC2_LENGTH = 19
 
+      extend Forwardable
+      def_delegators :ad_group, :campaign, :display_url, :link_url
+
       include ActiveModel::Model
-      ATTRIBUTES = %i(ad_group title desc1 desc2 display_url link_url path)
+      ATTRIBUTES = %i(ad_group title desc1 desc2)
       attr_accessor(*ATTRIBUTES)
       validates_presence_of :title, :desc1, :desc2
       validates_length_of :title, maximum: TITLE_LENGTH
@@ -17,10 +20,6 @@ module Ferenc
         [
           "#{self.campaign.label},#{self.ad_group.label},広告,オン,,,,,,#{self.label},#{self.title},#{self.desc1},#{self.desc2},#{self.display_url},#{self.link_url},,,,,,テキスト（15・19-19）,,,,,,,"
         ]
-      end
-
-      def campaign
-        self.ad_group.campaign
       end
 
       def label

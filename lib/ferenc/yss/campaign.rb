@@ -2,7 +2,7 @@ module Ferenc
   class Yss
     class Campaign
       include ActiveModel::Model
-      ATTRIBUTES = %i(name budget starts_on domain ad_groups)
+      ATTRIBUTES = %i(ad_groups name budget starts_on domain)
       attr_accessor(*ATTRIBUTES)
 
       def ad_groups
@@ -26,12 +26,14 @@ module Ferenc
 
       def display io
         i = 0
-        self.ads.each do |ad|
-          io << "#{i += 1}: #{ad.keyword}".bold << "\n"
-          io << ad.title.blue.underline << "\n"
-          io << ad.desc1 << "\n"
-          io << ad.desc2 << "\n"
-          io << ad.display_url.green << "\n\n"
+        self.ad_groups.each do |ad_group|
+          io << "#{i += 1}: #{ad_group.keyword}".bold << "\n"
+          ad_group.ads.each do |ad|
+            io << ad.title.blue.underline << "\n"
+            io << ad.desc1 << "\n"
+            io << ad.desc2 << "\n"
+            io << ad.display_url.green << "\n\n"
+          end
         end
       end
 

@@ -64,6 +64,7 @@ EOS
         else
           campaign.errors.each do |ad|
             puts ad.keyword.red.bold
+            puts ad.errors.full_messages
           end
         end
       end

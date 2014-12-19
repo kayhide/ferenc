@@ -10,11 +10,18 @@ module Ferenc
       attr_reader :campaign, :mixer
       def initialize yss, attrs
         @yss = yss
-        @campaign = yss.campaign(attrs.slice(*Campaign::ATTRIBUTES))
-        @campaign.starts_on = Date.today
-        @ad_attrs = attrs[:ad] || {}
-        @element_keys = attrs[:elements].try(:map, &:to_sym) || yss.elements.keys
-        @focused_element_keys = attrs[:focused_elements].try(:map, &:to_sym) || []
+        @attrs = attrs
+      end
+
+      def campaign
+        if @campaign.nil?
+          @campaign = Campaign.new(@attrs.slice(*Campaign::ATTRIBUTES))
+          @campaign.starts_on = Date.today
+          @element_keys = @attrs[:elements].try(:map, &:to_sym) || @yss.elements.keys
+          @focused_element_keys = @attrs[:focused_elements].try(:map, &:to_sym) || []
+          self.ads
+        end
+        @campaign
       end
 
       def ads
@@ -24,26 +31,27 @@ module Ferenc
         )
         @composer = Composer.new @yss.vocabularies
         @mixer.mix do |words, combo|
-          ad_group = AdGroup.new(@ad_attrs.slice(*AdGroup::ATTRIBUTES))
+          ad_group_attrs = @attrs[:ad_group] || {}
+          ad_group = AdGroup.new(ad_group_attrs.slice(*AdGroup::ATTRIBUTES))
           ad_group.campaign = @campaign
           ad_group.words = focus words
-          generator = AdGenerator.new @yss, @ad_attrs, words, combo
-          ad = generator.ad
-          ad.ad_group = ad_group
-          combo.members.each do |key|
-            @composer.vocabularies[key] = combo[key].try(:vocabularies) || [combo[key].to_s]
-          end
-          %w(title desc1 desc2).each do |key|
-            if (text = ad.send(key)).present?
-              ad.send("#{key}=", @composer.fit(text, Ad.length_for(key)))
+          ad_group.display_url ||= @campaign.domain
+          ad_group.path ||= @element_keys.map{|k| "<<#{k}>>"}.join('_') + '.html'
+          path = composer_for(combo, :to_param).expand(ad_group.path).first
+          ad_group.link_url ||= "http://#{@campaign.domain}/#{path}"
+          ad_group.ads = ad_group_attrs[:ads].to_a.map do |ad_attrs|
+            ad = Ad.new(ad_attrs.slice(*Ad::ATTRIBUTES))
+            ad.ad_group = ad_group
+            combo.members.each do |key|
+              @composer.vocabularies[key] = combo[key].try(:vocabularies) || [combo[key].to_s]
             end
+            %w(title desc1 desc2).each do |key|
+              if (text = ad.send(key)).present?
+                ad.send("#{key}=", @composer.fit(text, Ad.length_for(key)))
+              end
+            end
+            ad
           end
-          ad.display_url ||= @campaign.domain
-          ad.path ||= @element_keys.map{|k| "<<#{k}>>"}.join('_') + '.html'
-          path = composer_for(combo, :to_param).expand(ad.path).first
-          ad.link_url ||= "http://#{@campaign.domain}/#{path}"
-          yield generator if block_given?
-          ad_group.ads = [ad]
           ad_group
         end
         @campaign.ad_groups = @mixer.products
@@ -67,34 +75,11 @@ module Ferenc
       end
     end
 
-    class AdGenerator
-      attr_reader :ad, :words, :combo
-      def initialize yss, attrs, words, combo
-        @yss = yss
-        @ad = yss.ad(attrs.slice(*Ad::ATTRIBUTES))
-        @words = words
-        @combo = combo
+    def campaigns
+      config[:campaigns].map do |attrs|
+        g = CampaignGenerator.new self, attrs
+        g.campaign
       end
-    end
-
-    def campaigns &proc
-      config[:campaigns].map do |campaign_attrs|
-        generator = CampaignGenerator.new self, campaign_attrs
-        generator.ads(&proc)
-        generator.campaign
-      end
-    end
-
-    def campaign args = {}
-      Campaign.new((config[:campaign] || {}).merge args)
-    end
-
-    def ad_group args = {}
-      AdGroup.new((config[:ad] || {}).merge args)
-    end
-
-    def ad args = {}
-      Ad.new((config[:ad] || {}).merge args)
     end
 
     def elements

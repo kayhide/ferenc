@@ -112,11 +112,14 @@ describe Ferenc::Yss do
       @yss.config = {
         campaigns: [
           { name: 'Campaign1', budget: 1234,
-            ad:
-            { title: '<<location>>',
-              desc1: '<<location>> is good.',
-              desc2: '<<location>> is nice.',
-            },
+            ad_group: {
+              ads: [
+                { title: '<<location>>',
+                  desc1: '<<location>> is good.',
+                  desc2: '<<location>> is nice.',
+                },
+              ]
+            }
           },
         ],
         elements: {location: %w(Tokyo Kyoto)},
@@ -135,7 +138,9 @@ describe Ferenc::Yss do
       @yss.config = {
         campaigns: [{
           name: 'Campaign1', budget: 1234,
-          ad: {title: '<<location>> <<faculty>>'},
+          ad_group: {
+            ads: [{title: '<<location>> <<faculty>>'}]
+          },
           elements: [:location, :faculty]
         }],
         elements: {
@@ -153,7 +158,9 @@ describe Ferenc::Yss do
       @yss.config = {
         campaigns: [{
           name: 'Campaign1', budget: 1234,
-          ad: {title: '<<location>> <<faculty>>'},
+          ad_group: {
+            ads: [{title: '<<location>> <<faculty>>'}]
+          },
           elements: [:faculty, :location]
         }],
         elements: {
@@ -174,7 +181,9 @@ describe Ferenc::Yss do
       @yss.config = {
         campaigns: [{
           name: 'Campaign1', budget: 1234,
-          ad: {title: '<<location>> <<faculty>>'},
+          ad_group: {
+            ads: [{title: '<<location>> <<faculty>>'}]
+          },
           elements: [:location, :faculty],
           focused_elements: [:faculty]
         }],
@@ -194,7 +203,9 @@ describe Ferenc::Yss do
         campaigns: [{
           name: 'Campaign1', budget: 1234,
           domain: 'campaign.com',
-          ad: {}
+          ad_group: {
+            ads: [{}]
+          }
         }]
       }
       allow(@yss).to receive(:elements) {
@@ -203,8 +214,8 @@ describe Ferenc::Yss do
           faculty: [double(to_param: 'library')],
         }
       }
-      ads = @yss.campaigns.first.ads
-      expect(ads.map(&:link_url)).to eq(
+      ad_groups = @yss.campaigns.first.ad_groups
+      expect(ad_groups.map(&:link_url)).to eq(
         ['http://campaign.com/tokyo_library.html', 'http://campaign.com/kyoto_library.html']
       )
     end
@@ -214,7 +225,10 @@ describe Ferenc::Yss do
         campaigns: [{
           name: 'Campaign1', budget: 1234,
           domain: 'campaign.com',
-          ad: {path: '<<location>>/<<faculty>>/'},
+          ad_group: {
+            path: '<<location>>/<<faculty>>/',
+            ads: [{}]
+          },
         }]
       }
       allow(@yss).to receive(:elements) {
@@ -223,51 +237,10 @@ describe Ferenc::Yss do
           faculty: [double(to_param: 'library')],
         }
       }
-      ads = @yss.campaigns.first.ads
-      expect(ads.map(&:link_url)).to eq(
+      ad_groups = @yss.campaigns.first.ad_groups
+      expect(ad_groups.map(&:link_url)).to eq(
         ['http://campaign.com/tokyo/library/', 'http://campaign.com/kyoto/library/']
       )
-    end
-  end
-
-  describe '#campaign' do
-    before do
-      @yss = subject
-      @yss.config = {
-        campaign: {name: 'Campaign', budget: 1234}
-      }
-    end
-
-    it 'creates campaign with cofig' do
-      campaign = @yss.campaign
-      expect(campaign.name).to eq 'Campaign'
-      expect(campaign.budget).to eq 1234
-    end
-
-    it 'overwrites by args' do
-      campaign = @yss.campaign name: 'Overwritten'
-      expect(campaign.name).to eq 'Overwritten'
-    end
-  end
-
-  describe '#ad_group' do
-    before do
-      @yss = subject
-      @yss.config = {
-        ad: {words: %w(Keyword), budget: 123},
-        vocabularies: {location: %w(Tokyo)}
-      }
-    end
-
-    it 'creates ad_group with cofig' do
-      ad_group = @yss.ad_group
-      expect(ad_group.keyword).to eq 'Keyword'
-      expect(ad_group.budget).to eq 123
-    end
-
-    it 'overwrites by args' do
-      ad_group = @yss.ad_group words: %w(Overwritten)
-      expect(ad_group.keyword).to eq 'Overwritten'
     end
   end
 end
