@@ -6,7 +6,7 @@ module Ferenc
       DESC2_LENGTH = 19
 
       include ActiveModel::Model
-      ATTRIBUTES = %i(campaign words budget title desc1 desc2 display_url link_url path)
+      ATTRIBUTES = %i(ad_group title desc1 desc2 display_url link_url path)
       attr_accessor(*ATTRIBUTES)
       validates_presence_of :title, :desc1, :desc2
       validates_length_of :title, maximum: TITLE_LENGTH
@@ -15,22 +15,21 @@ module Ferenc
 
       def to_csv
         [
-          "#{self.campaign.label},#{self.group_name},広告グループ,オン,,,,,#{self.budget},,,,,,,,,,,,,,,,,,,",
-          "#{self.campaign.label},#{self.group_name},キーワード,オン,,部分一致,#{self.keyword},,一括入札,,,,,,,,,,,,,,,,,,,",
-          "#{self.campaign.label},#{self.group_name},広告,オン,,,,,,#{self.name},#{self.title},#{self.desc1},#{self.desc2},#{self.display_url},#{self.link_url},,,,,,テキスト（15・19-19）,,,,,,,"
+          "#{self.campaign.label},#{self.ad_group.label},広告,オン,,,,,,#{self.label},#{self.title},#{self.desc1},#{self.desc2},#{self.display_url},#{self.link_url},,,,,,テキスト（15・19-19）,,,,,,,"
         ]
       end
 
-      def group_name
-        self.name
+      def campaign
+        self.ad_group.campaign
       end
 
-      def name
-        self.keyword.gsub(/\s*/, '')
+      def label
+        i = self.ad_group.ads.index self
+        "#{self.ad_group.label}#{i + 1}"
       end
 
       def keyword
-        self.words.join(' ')
+        self.ad_group.words.join(' ')
       end
 
       class << self

@@ -250,7 +250,7 @@ describe Ferenc::Yss do
     end
   end
 
-  describe '#ad' do
+  describe '#ad_group' do
     before do
       @yss = subject
       @yss.config = {
@@ -259,15 +259,15 @@ describe Ferenc::Yss do
       }
     end
 
-    it 'creates ad with cofig' do
-      ad = @yss.ad
-      expect(ad.keyword).to eq 'Keyword'
-      expect(ad.budget).to eq 123
+    it 'creates ad_group with cofig' do
+      ad_group = @yss.ad_group
+      expect(ad_group.keyword).to eq 'Keyword'
+      expect(ad_group.budget).to eq 123
     end
 
     it 'overwrites by args' do
-      ad = @yss.ad words: %w(Overwritten)
-      expect(ad.keyword).to eq 'Overwritten'
+      ad_group = @yss.ad_group words: %w(Overwritten)
+      expect(ad_group.keyword).to eq 'Overwritten'
     end
   end
 end

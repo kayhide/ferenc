@@ -1,4 +1,5 @@
 require 'ferenc/yss/campaign'
+require 'ferenc/yss/ad_group'
 require 'ferenc/yss/ad'
 
 module Ferenc
@@ -23,10 +24,12 @@ module Ferenc
         )
         @composer = Composer.new @yss.vocabularies
         @mixer.mix do |words, combo|
+          ad_group = AdGroup.new(@ad_attrs.slice(*AdGroup::ATTRIBUTES))
+          ad_group.campaign = @campaign
+          ad_group.words = focus words
           generator = AdGenerator.new @yss, @ad_attrs, words, combo
           ad = generator.ad
-          ad.campaign = @campaign
-          ad.words = focus words
+          ad.ad_group = ad_group
           combo.members.each do |key|
             @composer.vocabularies[key] = combo[key].try(:vocabularies) || [combo[key].to_s]
           end
@@ -40,9 +43,10 @@ module Ferenc
           path = composer_for(combo, :to_param).expand(ad.path).first
           ad.link_url ||= "http://#{@campaign.domain}/#{path}"
           yield generator if block_given?
-          ad
+          ad_group.ads = [ad]
+          ad_group
         end
-        @campaign.ads = @mixer.products
+        @campaign.ad_groups = @mixer.products
       end
 
       def composer_for combo, method
@@ -83,6 +87,10 @@ module Ferenc
 
     def campaign args = {}
       Campaign.new((config[:campaign] || {}).merge args)
+    end
+
+    def ad_group args = {}
+      AdGroup.new((config[:ad] || {}).merge args)
     end
 
     def ad args = {}

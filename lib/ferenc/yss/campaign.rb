@@ -2,11 +2,11 @@ module Ferenc
   class Yss
     class Campaign
       include ActiveModel::Model
-      ATTRIBUTES = %i(name budget starts_on domain ads)
+      ATTRIBUTES = %i(name budget starts_on domain ad_groups)
       attr_accessor(*ATTRIBUTES)
 
-      def ads
-        @ads ||= []
+      def ad_groups
+        @ad_groups ||= []
       end
 
       def label
@@ -14,13 +14,14 @@ module Ferenc
       end
 
       def to_csv
-        rows = []
-        rows << "キャンペーン名,広告グループ名,コンポーネントの種類,配信設定,配信状況,マッチタイプ,キーワード,カスタムURL,入札価格,広告名,タイトル,説明文1,説明文2,表示URL,リンク先URL,キャンペーン予算（日額）,キャンペーン開始日,デバイス,配信先,スマートフォン入札価格調整率（%）,広告タイプ,キャリア,優先デバイス,キャンペーンID,広告グループID,キーワードID,広告ID,エラーメッセージ"
-        rows << "#{self.label},,キャンペーン,オフ,,,,,,,,,,,,#{self.budget},#{self.starts_on.strftime('%Y/%m/%d')},PC|タブレット|スマートフォン,すべて,0,,,,,,,,"
-        self.ads.each do |ad|
-          rows.concat ad.to_csv
-        end
-        rows.join("\n") + "\n"
+        [
+          "キャンペーン名,広告グループ名,コンポーネントの種類,配信設定,配信状況,マッチタイプ,キーワード,カスタムURL,入札価格,広告名,タイトル,説明文1,説明文2,表示URL,リンク先URL,キャンペーン予算（日額）,キャンペーン開始日,デバイス,配信先,スマートフォン入札価格調整率（%）,広告タイプ,キャリア,優先デバイス,キャンペーンID,広告グループID,キーワードID,広告ID,エラーメッセージ",
+          "#{self.label},,キャンペーン,オフ,,,,,,,,,,,,#{self.budget},#{self.starts_on.strftime('%Y/%m/%d')},PC|タブレット|スマートフォン,すべて,0,,,,,,,,"
+        ].concat(ad_groups.map(&:to_csv).flatten).join("\n") + "\n"
+      end
+
+      def ads
+        self.ad_groups.map(&:ads).inject(&:+)
       end
 
       def display io
@@ -35,11 +36,11 @@ module Ferenc
       end
 
       def valid?
-        @ads && self.errors.blank?
+        self.ads && self.errors.blank?
       end
 
       def errors
-        @errors ||= @ads && @ads.reject(&:valid?)
+        @errors ||= self.ads && self.ads.reject(&:valid?)
       end
     end
   end
