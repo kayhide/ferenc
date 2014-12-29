@@ -78,10 +78,17 @@ describe Ferenc::Yss do
     end
 
     it 'defines #vocabularies when arg keys includes vocabularies' do
-      @args[:vocabularies] = %w(to_s abbr)
+      @args[:vocabularies] = [:to_s, :abbr]
       locations = Ferenc::Yss.load_element(:location, @args)
       expect(locations[0].vocabularies).to eq %w(Tokyo Tky)
       expect(locations[1].vocabularies).to eq %w(Kyoto Kyt)
+    end
+
+    it 'defines #vocabularies with static text' do
+      @args[:vocabularies] = [:to_s, 'Nihon']
+      locations = Ferenc::Yss.load_element(:location, @args)
+      expect(locations[0].vocabularies).to eq %w(Tokyo Nihon)
+      expect(locations[1].vocabularies).to eq %w(Kyoto Nihon)
     end
   end
 

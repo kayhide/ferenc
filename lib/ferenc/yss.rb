@@ -127,8 +127,17 @@ module Ferenc
           if args[:vocabularies]
             define_method :vocabularies do
               args[:vocabularies].map do |attr|
-                self[attr]
+                case attr
+                when Symbol
+                  self[attr]
+                when String
+                  attr
+                end
               end.compact
+            end
+          else
+            define_method :vocabularies do
+              self.to_s
             end
           end
         end
