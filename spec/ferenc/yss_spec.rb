@@ -43,52 +43,73 @@ describe Ferenc::Yss do
   end
 
   describe '.load_element' do
-    before do
-      @args = {
-        csv: 'spec/fixtures/locations.csv',
-        attributes: %w(to_s name population abbr),
-      }
-    end
-
     after do
       Ferenc::Element.constants.each do |const|
         Ferenc::Element.send :remove_const, const
       end
     end
 
-    it 'loads from csv' do
-      locations = Ferenc::Yss.load_element(:location, @args)
-      expect(locations.length).to eq 2
-      expect(locations[0].to_h).to eq({
-        to_s: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
-      })
-      expect(locations[1].to_h).to eq({
-        to_s: 'Kyoto', name: 'kyoto', population: '147', abbr: 'Kyt'
-      })
+    describe 'from csv with headers' do
+      before do
+        @args = {
+          csv: 'spec/fixtures/locations_h.csv',
+        }
+      end
+
+      it 'loads from csv' do
+        locations = Ferenc::Yss.load_element(:location, @args)
+        expect(locations.length).to eq 2
+        expect(locations[0].to_h).to eq({
+          to_s: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
+        })
+        expect(locations[1].to_h).to eq({
+          to_s: 'Kyoto', name: 'kyoto', population: '147', abbr: 'Kyt'
+        })
+      end
     end
 
-    it 'defines class' do
-      Ferenc::Yss.load_element(:location, @args)
-      expect(Ferenc::Element::Location).to be_a(Class)
-    end
+    describe 'from csv without headers' do
+      before do
+        @args = {
+          csv: 'spec/fixtures/locations.csv',
+          attributes: %w(to_s name population abbr),
+        }
+      end
 
-    it 'defines .all' do
-      locations = Ferenc::Yss.load_element(:location, @args)
-      expect(Ferenc::Element::Location.all).to eq locations
-    end
+      it 'loads from csv' do
+        locations = Ferenc::Yss.load_element(:location, @args)
+        expect(locations.length).to eq 2
+        expect(locations[0].to_h).to eq({
+          to_s: 'Tokyo', name: 'tokyo', population: '1340', abbr: 'Tky'
+        })
+        expect(locations[1].to_h).to eq({
+          to_s: 'Kyoto', name: 'kyoto', population: '147', abbr: 'Kyt'
+        })
+      end
 
-    it 'defines #vocabularies when arg keys includes vocabularies' do
-      @args[:vocabularies] = [:to_s, :abbr]
-      locations = Ferenc::Yss.load_element(:location, @args)
-      expect(locations[0].vocabularies).to eq %w(Tokyo Tky)
-      expect(locations[1].vocabularies).to eq %w(Kyoto Kyt)
-    end
+      it 'defines class' do
+        Ferenc::Yss.load_element(:location, @args)
+        expect(Ferenc::Element::Location).to be_a(Class)
+      end
 
-    it 'defines #vocabularies with static text' do
-      @args[:vocabularies] = [:to_s, 'Nihon']
-      locations = Ferenc::Yss.load_element(:location, @args)
-      expect(locations[0].vocabularies).to eq %w(Tokyo Nihon)
-      expect(locations[1].vocabularies).to eq %w(Kyoto Nihon)
+      it 'defines .all' do
+        locations = Ferenc::Yss.load_element(:location, @args)
+        expect(Ferenc::Element::Location.all).to eq locations
+      end
+
+      it 'defines #vocabularies when arg keys includes vocabularies' do
+        @args[:vocabularies] = [:to_s, :abbr]
+        locations = Ferenc::Yss.load_element(:location, @args)
+        expect(locations[0].vocabularies).to eq %w(Tokyo Tky)
+        expect(locations[1].vocabularies).to eq %w(Kyoto Kyt)
+      end
+
+      it 'defines #vocabularies with static text' do
+        @args[:vocabularies] = [:to_s, 'Nihon']
+        locations = Ferenc::Yss.load_element(:location, @args)
+        expect(locations[0].vocabularies).to eq %w(Tokyo Nihon)
+        expect(locations[1].vocabularies).to eq %w(Kyoto Nihon)
+      end
     end
   end
 

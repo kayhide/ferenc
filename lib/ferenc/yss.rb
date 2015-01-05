@@ -111,8 +111,14 @@ module Ferenc
       end
 
       def load_element key, args
-        struct = Struct.new(*args[:attributes].map(&:to_sym))
-        elements = CSV.read(args[:csv]).select do |row|
+        elements = CSV.read(args[:csv])
+        struct =
+          if args[:attributes].present?
+            Struct.new(*args[:attributes].map(&:to_sym))
+          else
+            Struct.new(*elements.shift.map(&:to_sym))
+          end
+        elements = elements.select do |row|
           row.length == struct.members.length
         end.map do |row|
           struct.new(*row)
