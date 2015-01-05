@@ -22,10 +22,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "timecop"
+  spec.add_development_dependency "pry"
   spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-bundler'
   spec.add_development_dependency 'guard-rspec'
-  spec.add_dependency "activesupport"
-  spec.add_dependency "activemodel"
+  spec.add_dependency "activesupport", "~> 4.1.0"
+  spec.add_dependency "activemodel", "~> 4.1.0"
   spec.add_dependency "colorize"
 end
